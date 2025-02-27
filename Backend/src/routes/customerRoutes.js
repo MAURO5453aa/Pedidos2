@@ -30,3 +30,28 @@ router.get("/", async (req, res) => {
     }
 });
 
+// obtener un cliente por su id
+
+router.get("/:id", async, (req, res) => {
+    try{
+        const customer = await Customer.findById(req.params.id);
+        if (!customer) return res.status(404).json({ message: "Cliente no encontrado" });
+        res.json(customer);
+    }catch(error){
+        res.status(500).json({ message: error.message });
+
+    }
+});
+
+// actualizar un cliente por su id
+
+router.put("/:id", async (req, res) => {
+    try{
+        const updaetedCustomer = await Customer.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        if (!updatedCustomer) return res.status(404).json({ message: "Cliente no encontrado" });
+        res.json(updatedCustomer);
+    }catch(error){
+        res.status(500).json({ message: error.message });
+    }
+
+});
