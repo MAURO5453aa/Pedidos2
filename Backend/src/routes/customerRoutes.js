@@ -55,3 +55,20 @@ router.put("/:id", async (req, res) => {
     }
 
 });
+
+// eliminar un cliente por su id
+
+router.delete("/:id", async (req, res) => {
+
+    try{
+
+        const deletedCustomer = await Customer.findByIdAndDelete(req.params.id);
+        if (!deletedCustomer) return res.status(404).json({ message: "Cliente no encontrado" });
+
+        res.json({ message: "Cliente eliminado correctamente" });
+    }catch(error){
+        res.status(500).json({ message: error.message });               
+
+    }
+    
+});
