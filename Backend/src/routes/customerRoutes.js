@@ -18,3 +18,15 @@ router.post("/", async (req, res) => {
     }
 
 });
+
+// obtener todos los clientes
+
+router.get("/", async (req, res) => {
+    try {
+        const customers = await Customer.find();//obtenemos todos los clientes
+        res.json(customers);//mostramos los clientes
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
