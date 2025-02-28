@@ -1,14 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");// Importar la librería de mongoose
 
-const connectDB = async () => {
+const connectDB = async () => { // Función para conectar a la base de datos
     try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log("Conexión con la base de datos establecida");
+        const conn = await mongoose.connect(process.env.MONGO_URI);
+        console.log(`MongoDB conectado: ${conn.connection.host}`);
     } catch (error) {
-        console.log("Error al conectar con la base de datos", error);
+        console.error("Error al conectar con la base de datos", error);
         process.exit(1);
     }
 };

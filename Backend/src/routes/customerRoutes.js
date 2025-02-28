@@ -11,7 +11,6 @@ router.post("/", async (req, res) => {
         const { username, email, password , role }=req.body;//obtenemos los datos del cliente
         const newCustomer = new Customer({ username, email, password , role });//creamos un nuevo cliente
         await newCustomer.save();//guardamos el cliente en la base de datos
-        res.send("Cliente creado correctamente");//mensaje de que el cliente se creo correctamente
         res.status(201).json(newCustomer);//
     }catch(error){
         res.status(500).json({message: error.message});
@@ -29,10 +28,18 @@ router.get("/", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
+// refresacar la lista de clientes 
+router.get("/refresh", async (req, res) => {
+    try{
+        const customers = await Customer.find();//obtenemos todos los clientes
+        res.json({menssage: "Lista de clientes actualizada", customers});//mostramos los clientes
+        }catch(error){
+            res.status(500).json({ message: error.message });
+        }
+    });
 // obtener un cliente por su id
 
-router.get("/:id", async, (req, res) => {
+router.get("/:id", async (req, res) => {
     try{
         const customer = await Customer.findById(req.params.id);
         if (!customer) return res.status(404).json({ message: "Cliente no encontrado" });
@@ -47,7 +54,7 @@ router.get("/:id", async, (req, res) => {
 
 router.put("/:id", async (req, res) => {
     try{
-        const updaetedCustomer = await Customer.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        const updatedCustomer = await Customer.findByIdAndUpdate(req.params.id, req.body, {new: true});
         if (!updatedCustomer) return res.status(404).json({ message: "Cliente no encontrado" });
         res.json(updatedCustomer);
     }catch(error){
@@ -70,5 +77,8 @@ router.delete("/:id", async (req, res) => {
         res.status(500).json({ message: error.message });               
 
     }
-    
+
 });
+
+
+    module.exports = router;
