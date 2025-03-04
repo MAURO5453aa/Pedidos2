@@ -26,6 +26,15 @@ router.get("/", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+// Refrescar la lista de pedidos 
+router.get("/refresh", async (req, res) => {
+    try {
+        const orders = await Order.find().populate("customer").populate("products.product");
+        res.json({ message: "Lista de pedidos actualizada", orders });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 // Obtener un pedido por su ID
 router.get("/:id", async (req, res) => {
@@ -39,6 +48,7 @@ router.get("/:id", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
 
 // 📌 Actualizar un pedido por su ID
 router.put("/:id", async (req, res) => {
@@ -62,14 +72,6 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
-// Refrescar la lista de pedidos 
-router.get("/refresh", async (req, res) => {
-    try {
-        const orders = await Order.find().populate("customer").populate("products.product");
-        res.json({ message: "Lista de pedidos actualizada", orders });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+
 
 module.exports = router;
