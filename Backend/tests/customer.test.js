@@ -1,5 +1,6 @@
 const request = require("supertest");
-const app = require("../src/index"); // Importamos la app
+const path = require("path");
+const app = require(path.resolve(__dirname, "../src/index"));// Importamos la app
 
 describe("Pruebas de la API de Customers", () => {
   test("Debe devolver un array de clientes", async () => {
