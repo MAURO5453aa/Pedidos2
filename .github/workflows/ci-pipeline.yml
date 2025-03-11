@@ -21,10 +21,11 @@ jobs:
         with: # Configurar la versión de Node.js
           node-version: 18  # Usar la versión 18 de Node.js
 
-      - name:  Instalar dependencias
+      - name: 📦 Instalar dependencias y dar permisos a Jest
         run: |
           cd Backend
           npm install
+          chmod +x node_modules/.bin/jest
 
       - name:  Ejecutar pruebas con Jest
         run: |
