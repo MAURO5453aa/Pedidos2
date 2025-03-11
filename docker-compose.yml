@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./Backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb+srv://Mauro:MAURO123aa@pedido.45fg1.mongodb.net/?appName=Pedido
+      - PORT=3000
+      - JWT_SECRET=secret
+    volumes:
+      - ./Backend:/app  
+      - /app/node_modules  
+    depends_on:
+      - mongo
+    command: ["npm", "run", "dev"]  
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
