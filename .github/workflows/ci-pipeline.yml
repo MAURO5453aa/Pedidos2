@@ -4,14 +4,34 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Clonar el repositorio
-        uses: actions/checkout@v4
+      - name:  Clonar el repositorio # Clonar el repositorio  en la máquina virtual
+        uses: actions/checkout@v4 # Usar la acción de checkout  en la versión 4
 
-      - name: 🚀 Prueba de pipeline
-        run: echo "¡El pipeline está funcionando!"
+      - name:  Configurar Node.js # Configurar Node.js en la máquina virtual
+        uses: actions/setup-node@v4 # Usar la acción de setup-node en la versión 4
+        with: # Configurar la versión de Node.js
+          node-version: 18  # Usar la versión 18 de Node.js
+
+      - name:  Instalar dependencias
+        run: |
+          cd Backend
+          npm install
+
+      - name:  Ejecutar pruebas con Jest
+        run: |
+          cd Backend
+          npm test
+
+      - name:  Construir imagen de Docker
+        run: |
+          cd Backend
+          docker build -t backend-pedidos . 
