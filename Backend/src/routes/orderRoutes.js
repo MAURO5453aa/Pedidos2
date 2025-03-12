@@ -2,6 +2,8 @@ const express = require("express"); // Para crear el servidor
 const Order = require("../models/Order"); 
 
 const router = express.Router();
+const mongoose = require("mongoose");
+
 
 // Crear un nuevo pedido
 router.post("/", async (req, res) => {

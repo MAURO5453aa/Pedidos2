@@ -3,22 +3,26 @@ const { body, validationResult } = require('express-validator');
 const Customer = require('../models/Customer'); // Importamos el modelo
 const router = express.Router();
 
+const mongoose = require("mongoose");
+
+
 // Crear un nuevo cliente con validaciones 
 router.post(
     "/",
     [
         body("username").notEmpty().withMessage("El campo username es requerido"),
         body("email").isEmail().withMessage("El campo email debe ser un correo válido"),
-        body("password").isLength({ min: 6 }).withMessage("El campo password debe tener al menos 6 caracteres"),
-        body("role").isIn(["admin", "user"]).withMessage("El campo role debe ser admin o customer")
+        body("password").notEmpty().withMessage("La contraseña es obligatoria"),
+        body("role").isIn(["admin", "customer"]).withMessage("El campo role debe ser admin o customer"),
     ],
     async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json(errors.array());
+            return res.status(400).json({ errors: errors.array() }); // 🔥 Asegura que devuelve errores bien formateados
         }
+
         try {
-            const { username, email, password, role } = req.body;  // Usar "username"
+            const { username, email, password, role } = req.body;
             const newCustomer = new Customer({ username, email, password, role });
             await newCustomer.save();
             res.status(201).json(newCustomer);
@@ -50,6 +54,10 @@ router.get("/refresh", async (req, res) => {
 
 // Obtener un cliente por su id
 router.get("/:id", async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "ID inválido" });
+    }
+
     try {
         const customer = await Customer.findById(req.params.id);
         if (!customer) return res.status(404).json({ message: "Cliente no encontrado" });
@@ -59,6 +67,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+
 // Actualizar un cliente por su id
 router.put(
     "/:id",
@@ -66,7 +75,7 @@ router.put(
         body("username").optional().notEmpty().withMessage("El nombre no puede estar vacío"),
         body("email").optional().isEmail().withMessage("Debe ser un email válido"),
         body("password").optional().isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres"),
-        body("role").optional().isIn(["admin", "user"]).withMessage("El rol debe ser 'admin' o 'user'")
+        body("role").optional().isIn(["admin", "customer"]).withMessage("El rol debe ser 'admin' o 'user'")
     ],
     async (req, res) => {
         const errors = validationResult(req);

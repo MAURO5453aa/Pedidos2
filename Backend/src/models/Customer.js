@@ -18,8 +18,8 @@ const customerSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["admin", "user"],
-        default: "user",
+        enum: ["admin", "customer"],
+        default: "customer",
     }
 }, { timestamps: true }); // Agrega createdAt y updatedAt automáticamente
 
