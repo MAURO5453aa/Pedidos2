@@ -102,5 +102,19 @@ router.delete("/:id", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+router.post("/", async (req, res) => {
+    try {
+        const { email } = req.body;
+        const existingCustomer = await Customer.findOne({ email });
+        if (existingCustomer) {
+            return res.status(400).json({ errors: [{ msg: "Email ya registrado" }] });
+        }
+        const newCustomer = new Customer(req.body);
+        await newCustomer.save();
+        res.status(201).json(newCustomer);
+    } catch (error) {
+        res.status(500).json({ message: "Error al crear el cliente" });
+    }
+});
 
 module.exports = router;
