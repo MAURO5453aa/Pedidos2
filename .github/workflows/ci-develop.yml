@@ -1,0 +1,73 @@
+name: CI/CD Pipeline - Backend Pedidos
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:5.0
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: example
+
+    steps:
+      - name: 📥 Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: 🔧 Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Instalar dependencias
+        run: |
+          cd Backend
+          npm install
+
+      - name: 🛠 Configurar Jest para ejecución en CI
+        run: |
+          cd Backend
+          chmod +x node_modules/.bin/jest
+
+      - name: 🧪 Ejecutar pruebas con cobertura
+        run: |
+          cd Backend
+          npm test -- --coverage
+
+      - name: 📤 Guardar reporte de cobertura
+        uses: actions/upload-artifact@v3
+        with:
+          name: cobertura-tests
+          path: Backend/coverage
+
+  push-to-docker-hub:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' # Solo se ejecuta en la rama main
+
+    steps:
+      - name: 📥 Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: 🔧 Loguearse en Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: 🏗 Construir la imagen de Docker
+        run: |
+          cd Backend
+          docker build -t usuario/backend-pedidos .
+          docker tag usuario/backend-pedidos usuario/backend-pedidos:latest
+
+      - name: 🚀 Subir imagen a Docker Hub
+        run: docker push usuario/backend-pedidos:latest
