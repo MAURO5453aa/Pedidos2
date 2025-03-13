@@ -1,27 +1,31 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-// Definimos el esquema de cliente sin el campo id personalizado
-const customerSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
+// Definimos el esquema de cliente
+const customerSchema = new mongoose.Schema(
+    {
+        username: {
+            type: String,
+            required: [true, "El nombre de usuario es obligatorio"],
+        },
+        email: {
+            type: String,
+            required: [true, "El email es obligatorio"],
+            trim: true,
+            unique: true,
+            match: [/.+\@.+\..+/, "El email es inválido"],
+        },
+        password: {
+            type: String,
+            required: [true, "La contraseña es obligatoria"],
+        },
+        role: {
+            type: String,
+            enum: ["admin", "customer"],
+            default: "customer",
+        },
     },
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    role: {
-        type: String,
-        enum: ["admin", "customer"],
-        default: "customer",
-    }
-}, { timestamps: true }); // Agrega createdAt y updatedAt automáticamente
+    { timestamps: true }
+);
 
 const Customer = mongoose.model("Customer", customerSchema);
 module.exports = Customer;
