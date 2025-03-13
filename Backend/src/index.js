@@ -9,7 +9,11 @@ const orderRoutes = require("./routes/orderRoutes"); // Importamos las rutas de 
 
 
 const app = express(); // crar la ruta de express para el servidor
-const port = process.env.PORT || 3000; // Puerto donde se ejecuta el servidor
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+}); // Puerto donde se ejecuta el servidor
 
 connectDB(); // Conectar a la base de datos
 
