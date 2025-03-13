@@ -10,6 +10,4 @@ const orderSchema = new mongoose.Schema({
     status: { type: String, enum: ['pending', 'shipped', 'delivered', 'canceled'], default: 'pending' }
 }, { timestamps: true });
 
-const Order = mongoose.model('Order', orderSchema);
-
-module.exports = Order;
+module.exports = mongoose.model("Order", orderSchema);

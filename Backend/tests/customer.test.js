@@ -1,48 +1,76 @@
 const request = require("supertest");
 const path = require("path");
-const app = require(path.resolve(__dirname, "../src/index")); // Importamos la app
+const mongoose = require("mongoose");
+const app = require(path.resolve(__dirname, "../src/index"));
 
-describe("Pruebas de la API de Customers", () => {
-    let customerId;
+let customerId;
 
-    // ✅ Prueba: Crear un cliente correctamente
-    test("Debe crear un nuevo cliente", async () => {
-        const response = await request(app).post("/customers").send({
-            username: "Cliente Test",
-            email: `test_${Date.now()}@email.com`, // Genera un email único
-            password: "clave123",
-            role: "customer"
-        });
+describe("Pruebas completas CRUD Customers", () => {
 
-        console.log("📌 Respuesta creación cliente:", response.body);
-        expect(response.statusCode).toBe(201);
-        expect(response.body).toHaveProperty("_id");
-        customerId = response.body._id; // Guardamos el ID para otras pruebas
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+
+  test("Debe crear correctamente un nuevo cliente", async () => {
+    const response = await request(app).post("/customers").send({
+      username: "Cliente Test",
+      email: `cliente_${Date.now()}@test.com`,
+      password: "clave123",
+      role: "customer"
     });
 
-    // ✅ Prueba: Obtener un cliente existente
-    test("Debe obtener el cliente creado", async () => {
-        const response = await request(app).get(`/customers/${customerId}`);
-        console.log("📌 Respuesta obtener cliente:", response.body);
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty("username");
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toHaveProperty("_id");
+    customerId = response.body._id;
+  });
+
+  test("Debe obtener correctamente el cliente creado", async () => {
+    const response = await request(app).get(`/customers/${customerId}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("_id", customerId);
+    expect(response.body).toHaveProperty("username", "Cliente Test");
+  });
+
+  test("Debe actualizar correctamente el cliente creado", async () => {
+    const response = await request(app).put(`/customers/${customerId}`).send({
+      email: "correoactualizado@test.com"
     });
 
-    // ❌ Eliminamos las pruebas de ID inválido, errores de validación y actualización
+    expect(response.statusCode).toBe(200);
+    expect(response.body.email).toBe("correoactualizado@test.com");
+  });
 
-    // ✅ Prueba: Eliminar un cliente existente
-    test("Debe eliminar el cliente creado", async () => {
-        const response = await request(app).delete(`/customers/${customerId}`);
-        console.log("📌 Respuesta eliminar cliente:", response.body);
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty("message", "Cliente eliminado correctamente");
-    });
+  test("Debe obtener correctamente la lista de clientes", async () => {
+    const response = await request(app).get("/customers");
 
-    // ✅ Prueba: Intentar eliminar un cliente inexistente
-    test("Debe fallar al eliminar un cliente inexistente", async () => {
-        const response = await request(app).delete(`/customers/${customerId}`);
-        console.log("📌 Respuesta eliminar cliente inexistente:", response.body);
-        expect(response.statusCode).toBe(404);
-        expect(response.body).toHaveProperty("message", "Cliente no encontrado");
-    });
+    expect(response.statusCode).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+  });
+
+  test("Debe fallar al obtener cliente con ID inválido", async () => {
+    const response = await request(app).get("/customers/id-invalido");
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe("ID inválido");
+  });
+
+  test("Debe eliminar correctamente el cliente creado", async () => {
+    const response = await request(app).delete(`/customers/${customerId}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe("Cliente eliminado correctamente");
+  });
+
+  test("Debe fallar al eliminar un cliente inexistente", async () => {
+    const fakeId = new mongoose.Types.ObjectId();
+    const response = await request(app).delete(`/customers/${fakeId}`);
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe("Cliente no encontrado");
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
 });

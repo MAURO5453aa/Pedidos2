@@ -1,79 +1,101 @@
-const express = require("express"); // Para crear el servidor
-const Order = require("../models/Order"); 
-
-const router = express.Router();
+const express = require("express");
+const Order = require("../models/Order");
 const mongoose = require("mongoose");
 
+const router = express.Router();
 
-// Crear un nuevo pedido
+// 📌 Crear un pedido con validaciones mejoradas
 router.post("/", async (req, res) => {
     try {
-        const { customer, products, totalPrice } = req.body; // Obtenemos los datos del pedido
-        const newOrder = new Order({ customer, products, totalPrice }); // Creamos un nuevo pedido
-        await newOrder.save(); // Guardamos el pedido en la base de datos
+        const { customer, products, totalPrice, status } = req.body;
+
+        if (!customer || !products || !totalPrice) {
+            return res.status(400).json({ message: "Todos los campos son obligatorios" });
+        }
+
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({ message: "Debe haber al menos un producto en el pedido" });
+        }
+
+        // Validar si `status` es uno de los valores permitidos
+        const validStatuses = ["pending", "shipped", "delivered", "canceled"];
+        if (status && !validStatuses.includes(status)) {
+            return res.status(400).json({ message: `Estado inválido. Valores permitidos: ${validStatuses.join(", ")}` });
+        }
+
+        const newOrder = new Order({ customer, products, totalPrice, status });
+        await newOrder.save();
         res.status(201).json(newOrder);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al crear el pedido", error: error.message });
     }
 });
 
-// Obtener todos los pedidos
+// 📌 Obtener todos los pedidos
 router.get("/", async (req, res) => {
     try {
-        const orders = await Order.find()
-            .populate("customer") // Muestra detalles del cliente
-            .populate("products.product"); // Muestra detalles de los productos
-        res.json(orders); // Mostramos los pedidos
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-// Refrescar la lista de pedidos 
-router.get("/refresh", async (req, res) => {
-    try {
         const orders = await Order.find().populate("customer").populate("products.product");
-        res.json({ message: "Lista de pedidos actualizada", orders });
+        
+        if (orders.length === 0) {
+            return res.status(404).json({ message: "No hay pedidos disponibles" });
+        }
+
+        res.status(200).json(orders);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al obtener pedidos" });
     }
 });
 
-// Obtener un pedido por su ID
+// 📌 Obtener un pedido por ID con validación
 router.get("/:id", async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "ID inválido" });
+    }
+
     try {
-        const order = await Order.findById(req.params.id)
-            .populate("customer")
-            .populate("products.product");
+        const order = await Order.findById(req.params.id).populate("customer").populate("products.product");
         if (!order) return res.status(404).json({ message: "Pedido no encontrado" });
-        res.json(order);
+
+        res.status(200).json(order);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al obtener el pedido" });
     }
 });
 
-
-// 📌 Actualizar un pedido por su ID
+// 📌 Actualizar un pedido con validación de ID y estado
 router.put("/:id", async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "ID inválido" });
+    }
+
     try {
         const updatedOrder = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedOrder) return res.status(404).json({ message: "Pedido no encontrado" });
-        res.json(updatedOrder);
+
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Pedido no encontrado" });
+        }
+
+        res.status(200).json(updatedOrder);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al actualizar el pedido" });
     }
 });
 
-// Eliminar un pedido por su ID 
+// 📌 Eliminar un pedido con validación de ID
 router.delete("/:id", async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "ID inválido" });
+    }
+
     try {
         const deletedOrder = await Order.findByIdAndDelete(req.params.id);
-        if (!deletedOrder) return res.status(404).json({ message: "Pedido no encontrado" });
-        res.json({ message: "Pedido eliminado correctamente" });
+        if (!deletedOrder) {
+            return res.status(404).json({ message: "Pedido no encontrado" });
+        }
+        res.status(200).json({ message: "Pedido eliminado correctamente" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al eliminar el pedido" });
     }
 });
-
-
 
 module.exports = router;

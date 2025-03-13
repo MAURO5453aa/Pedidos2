@@ -1,87 +1,60 @@
-const express = require('express');
-const { body, validationResult } = require("express-validator");
-const Product = require('../models/Product'); // Importamos el modelo de la base de datos
+const express = require("express");
+const Product = require("../models/Product");
+const mongoose = require("mongoose");
 
 const router = express.Router();
 
-// 📌 Crear un nuevo producto (Create)
-router.post(
-    "/",
-    [
-        body("name").notEmpty().withMessage("El nombre del producto es obligatorio"),
-        body("price").isFloat({ min: 0 }).withMessage("El precio debe ser un número positivo"),
-        body("stock").isInt({ min: 0 }).withMessage("El stock debe ser un número entero positivo"),
-        body("category").notEmpty().withMessage("La categoría es obligatoria")
-    ],
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
-        try {
-            const { name, description, price, stock, image, category } = req.body;
-            const newProduct = new Product({ name, description, price, stock, image, category });
-            await newProduct.save();
-            res.status(201).json(newProduct);
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
-    }
-);
-
-// 📌 Refrescar la lista de productos
-router.get("/refresh", async (req, res) => {
+// Crear un nuevo producto
+router.post("/", async (req, res) => {
     try {
-        const products = await Product.find(); // Obtenemos todos los productos
-        res.json({ message: "Lista de productos actualizada", products }); // Mostramos los productos
+        const { name, price, description, stock, image, category } = req.body;
+
+        if (!name || !price || !description || !stock || !image || !category) {
+            return res.status(400).json({ message: "Todos los campos son obligatorios" });
+        }
+
+        const newProduct = new Product({ name, price, description, stock, image, category });
+        await newProduct.save();
+        res.status(201).json(newProduct);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al crear el producto" });
     }
 });
 
-// 📌 Obtener todos los productos (Read)
+// Obtener todos los productos
 router.get("/", async (req, res) => {
     try {
-        const products = await Product.find(); // Obtenemos todos los productos
-        res.json(products); // Mostramos los productos
+        const products = await Product.find();
+        res.status(200).json(products);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al obtener productos" });
     }
 });
 
-
-
-// 📌 Obtener un producto por su ID (Read One)
+// Obtener producto por ID con validación
 router.get("/:id", async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "ID inválido" });
+    }
+
     try {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ message: "Producto no encontrado" });
-        res.json(product);
+        res.status(200).json(product);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al obtener el producto" });
     }
 });
 
-// 📌 Actualizar un producto por su ID (Update)
-router.put("/:id", async (req, res) => {
-    try {
-        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedProduct) return res.status(404).json({ message: "Producto no encontrado" });
-        res.json(updatedProduct);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// 📌 Eliminar un producto por su ID (Delete)
+// Eliminar un producto
 router.delete("/:id", async (req, res) => {
     try {
         const deletedProduct = await Product.findByIdAndDelete(req.params.id);
         if (!deletedProduct) return res.status(404).json({ message: "Producto no encontrado" });
-        res.json({ message: "Producto eliminado" });
+
+        res.status(200).json({ message: "Producto eliminado correctamente" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Error al eliminar el producto" });
     }
 });
 
