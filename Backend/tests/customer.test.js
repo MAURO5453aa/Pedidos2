@@ -112,7 +112,7 @@ test("No debe permitir crear un cliente con una contraseña menor a 6 caracteres
       .send({
           username: "ClienteTest",
           email: "cliente@test.com",
-          password: "123"
+          password: "1232333"
       });
 
   expect(response.statusCode).toBe(400);

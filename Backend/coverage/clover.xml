@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1741850445886" clover="3.2.0">
-  <project timestamp="1741850445886" name="All files">
-    <metrics statements="183" coveredstatements="157" conditionals="75" coveredconditionals="58" methods="18" coveredmethods="15" elements="276" coveredelements="230" complexity="0" loc="183" ncloc="183" packages="4" files="8" classes="8"/>
+<coverage generated="1742439471957" clover="3.2.0">
+  <project timestamp="1742439471957" name="All files">
+    <metrics statements="183" coveredstatements="157" conditionals="75" coveredconditionals="57" methods="18" coveredmethods="15" elements="276" coveredelements="229" complexity="0" loc="183" ncloc="183" packages="4" files="8" classes="8"/>
     <package name="src">
       <metrics statements="22" coveredstatements="19" conditionals="4" coveredconditionals="2" methods="2" coveredmethods="0"/>
       <file name="index.js" path="C:\Users\Win10\Desktop\Pedidos\Backend\src\index.js">
@@ -14,20 +14,20 @@
         <line num="6" count="3" type="stmt"/>
         <line num="7" count="3" type="stmt"/>
         <line num="8" count="3" type="stmt"/>
-        <line num="11" count="3" type="stmt"/>
-        <line num="12" count="3" type="cond" truecount="1" falsecount="1"/>
-        <line num="14" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="11" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
         <line num="17" count="3" type="stmt"/>
-        <line num="18" count="3" type="stmt"/>
         <line num="20" count="3" type="stmt"/>
         <line num="21" count="3" type="stmt"/>
         <line num="22" count="3" type="stmt"/>
-        <line num="26" count="3" type="stmt"/>
-        <line num="27" count="0" type="stmt"/>
-        <line num="31" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="30" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="31" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
-        <line num="33" count="0" type="stmt"/>
-        <line num="37" count="3" type="stmt"/>
+        <line num="36" count="3" type="stmt"/>
       </file>
     </package>
     <package name="src.config">
@@ -68,9 +68,9 @@
       </file>
     </package>
     <package name="src.routes">
-      <metrics statements="142" coveredstatements="121" conditionals="71" coveredconditionals="56" methods="15" coveredmethods="14"/>
+      <metrics statements="142" coveredstatements="121" conditionals="71" coveredconditionals="55" methods="15" coveredmethods="14"/>
       <file name="customerRoutes.js" path="C:\Users\Win10\Desktop\Pedidos\Backend\src\routes\customerRoutes.js">
-        <metrics statements="48" coveredstatements="40" conditionals="28" coveredconditionals="18" methods="5" coveredmethods="4"/>
+        <metrics statements="48" coveredstatements="40" conditionals="28" coveredconditionals="17" methods="5" coveredmethods="4"/>
         <line num="1" count="3" type="stmt"/>
         <line num="2" count="3" type="stmt"/>
         <line num="3" count="3" type="stmt"/>
@@ -80,12 +80,12 @@
         <line num="10" count="7" type="cond" truecount="1" falsecount="1"/>
         <line num="11" count="7" type="cond" truecount="4" falsecount="0"/>
         <line num="12" count="5" type="cond" truecount="1" falsecount="1"/>
-        <line num="13" count="5" type="cond" truecount="2" falsecount="0"/>
-        <line num="15" count="4" type="stmt"/>
-        <line num="16" count="4" type="cond" truecount="1" falsecount="1"/>
-        <line num="18" count="4" type="stmt"/>
-        <line num="19" count="4" type="stmt"/>
-        <line num="21" count="4" type="stmt"/>
+        <line num="13" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="15" count="5" type="stmt"/>
+        <line num="16" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="18" count="5" type="stmt"/>
+        <line num="19" count="5" type="stmt"/>
+        <line num="21" count="5" type="stmt"/>
         <line num="23" count="0" type="stmt"/>
         <line num="28" count="3" type="stmt"/>
         <line num="29" count="0" type="stmt"/>
