@@ -7,20 +7,19 @@ const customerRoutes = require("./routes/customerRoutes"); // Importar rutas de 
 const productRoutes = require("./routes/productRoutes"); // Importamos las rutas de productos
 const orderRoutes = require("./routes/orderRoutes"); // Importamos las rutas de pedidos
 
-
-const app = express(); // crar la ruta de express para el servidor
-const port = process.env.PORT || 3000; // Puerto donde se ejecuta el servidor
+const app = express(); // Crear la ruta de express para el servidor
+const PORT = process.env.PORT || 3000;
 
 connectDB(); // Conectar a la base de datos
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
 // Usar las rutas (⬇ Mover esto después de inicializar app)
 app.use("/customers", customerRoutes);
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes); 
-
 
 // Ruta de prueba
 app.get("/", (req, res) => {
@@ -29,8 +28,8 @@ app.get("/", (req, res) => {
 
 // Iniciar el servidor
 if (process.env.NODE_ENV !== "test") {
-    app.listen(port, () => {
-        console.log(`Servidor corriendo en http://localhost:${port}`);
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
 }
 

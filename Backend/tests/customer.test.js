@@ -78,4 +78,44 @@ describe("Pruebas completas CRUD Customers", () => {
     expect(response.body.message).toContain("El email es inválido");
   });
 
+  test("Debe devolver error 400 si falta el email del cliente", async () => {
+    const response = await request(app)
+        .post("/customers")
+        .send({
+            username: "ClienteSinEmail",
+            password: "securePass123",
+            role: "customer",
+        });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toContain("email");
+});
+
+test("Debe permitir crear un cliente con una contraseña de al menos 6 caracteres", async () => {
+  const response = await request(app)
+      .post("/customers")
+      .send({
+          username: "ClienteValido",
+          email: "clientevalido@test.com",
+          password: "123456" // Exactamente 6 caracteres
+      });
+
+  expect(response.statusCode).toBe(201);
+  expect(response.body).toHaveProperty("username", "ClienteValido");
+  expect(response.body).toHaveProperty("email", "clientevalido@test.com");
+});
+
+
+test("No debe permitir crear un cliente con una contraseña menor a 6 caracteres", async () => {
+  const response = await request(app)
+      .post("/customers")
+      .send({
+          username: "ClienteTest",
+          email: "cliente@test.com",
+          password: "1232333"
+      });
+
+  expect(response.statusCode).toBe(400);
+  expect(response.body.message).toBe("La contraseña debe tener al menos 6 caracteres");
+});
 });

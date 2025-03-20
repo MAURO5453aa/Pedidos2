@@ -10,6 +10,7 @@ router.post("/", async (req, res) => {
         if (!username) return res.status(400).json({ message: "El nombre de usuario es obligatorio" });
         if (!email || !email.includes("@")) return res.status(400).json({ message: "El email es inválido" });
         if (!password) return res.status(400).json({ message: "La contraseña es obligatoria" });
+        if (password.length < 6) return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres" });
 
         const existingCustomer = await Customer.findOne({ email });
         if (existingCustomer) return res.status(400).json({ message: "El email ya está registrado" });
